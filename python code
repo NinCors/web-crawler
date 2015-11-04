@@ -1,0 +1,38 @@
+__author__ = 'Chiyu Cheng'
+import requests
+from bs4 import BeautifulSoup
+
+def amazon_page(maxpage):
+    page = 1
+    name_array = []
+    price_array = []
+    href_array = []
+    while page <= maxpage:
+        print("Captureing in process.....")
+        url = 'http://www.amazon.com/s/ref=sr_pg_2?fst=as%3Aoff&rh=n%3A468642%2Cn%3A6427814011%2Cn%3A6427831011%2Ck%3Avideo+game&page='+ str(page)
+        source_code = requests.get(url)
+        print("Captureing in process...")
+        plain_text = source_code.text
+        super_soup = BeautifulSoup(plain_text,"html.parser")
+        print("Captureing in process..")
+        for link in super_soup.find_all('a',{'class':'a-link-normal s-access-detail-page  a-text-normal'}):
+            href = link.get('href')
+            href_array.append(href)
+            name = link.string
+            name_array.append(name)
+        for link1 in super_soup.find_all('span',{'class':'a-size-base a-color-price s-price a-text-bold'}):
+            price = link1.string
+            price_array.append(price)
+        page = page + 1
+    file = open("amazon_game_price.txt", "w")
+    for num in range(len(name_array)):
+        file.write(name_array[num])
+        file.write("\n")
+        file.write(price_array[num])
+        file.write("\n")
+        file.write(href_array[num])
+        file.write("\n")
+        file.write("\n")
+    file.close()
+
+amazon_page(1)
